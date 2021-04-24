@@ -35,6 +35,11 @@ public class AudioManager : MonoBehaviour
     void Update()
     {
         StopSong();
+
+        if (!GetComponent<AudioSource>().isPlaying)
+        {
+            Change();
+        }
     }
 
     void StopSong()

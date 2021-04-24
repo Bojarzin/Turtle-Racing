@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.4466616, g: 0.49651265, b: 0.57486886, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 8d8863ebd00e7d94d89d9fcb718cfdde, type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -6969,7 +6969,7 @@ MonoBehaviour:
   playerSpeed: 4000
   playerMaxSpeed: 10
   rotationSpeed: 0.4
-  jumpForce: 50000
+  jumpForce: 20000
   currentPowerup: []
   placeToRespawn: {fileID: 102701333}
   hasJump: 0
