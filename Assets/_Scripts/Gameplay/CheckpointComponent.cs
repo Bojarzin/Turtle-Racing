@@ -31,10 +31,19 @@ public class CheckpointComponent : MonoBehaviour
         {
             if (finalCheckpoint)
             {
-                GameManager.Instance.lapCount += 1;
-                GameManager.Instance.UpdateSignText();
-                GameManager.Instance.ResetTimer();
-                GameManager.Instance.UI.UpdateText();
+                if (GameManager.Instance.lapCheck >= 3)
+                {
+                    GameManager.Instance.lapCount += 1;
+                    GameManager.Instance.UpdateSignText();
+                    GameManager.Instance.ResetTimer();
+                    GameManager.Instance.UI.UpdateText();
+
+                    for (int i = 0; i < GameManager.Instance.lapChecks.Count; i++)
+                    {
+                        GameManager.Instance.lapChecks[i].playerHasTouched = false;
+                        GameManager.Instance.lapCheck = 0;
+                    }
+                }
             }
             other.GetComponent<PlayerController>().placeToRespawn = respawn.transform;
         }

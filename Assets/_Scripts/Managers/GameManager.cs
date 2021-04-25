@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     }
 
     public int lapCount = 0;
+    public int lapCheck = 0;
 
     public float timer = 0.0f;
     float minutes;
@@ -34,6 +35,7 @@ public class GameManager : MonoBehaviour
     public float lapThreeTime;
 
     public List<TMP_Text> checkpointSignsText;
+    public List<LapCheckComponent> lapChecks;
 
     public TimerUI UI;
 
