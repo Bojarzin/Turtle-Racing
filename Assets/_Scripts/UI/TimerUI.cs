@@ -24,6 +24,10 @@ public class TimerUI : MonoBehaviour
     void Start()
     {
         UpdateText();
+        if (ResultInfo.Instance.hasSpawned == true)
+        {
+            hint.text = "";
+        }
     }
 
     // Update is called once per frame
@@ -44,6 +48,10 @@ public class TimerUI : MonoBehaviour
                 hintAlpha -= Time.deltaTime;
                 hint.color = new Vector4(0.4310253f, 0.4848309f, 0.5471698f, hintAlpha);
             }
+        }
+        else
+        {
+
         }
     }
 

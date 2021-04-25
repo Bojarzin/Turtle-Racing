@@ -33,7 +33,7 @@ public class ResultInfo : MonoBehaviour
         DontDestroyOnLoad(this);
         if (hasSpawned == false)
         {
-            StartCoroutine(HintText());
+            StartCoroutine(HintTextTimer());
         }
     }
 
@@ -43,7 +43,7 @@ public class ResultInfo : MonoBehaviour
 
     }
 
-    IEnumerator HintText()
+    IEnumerator HintTextTimer()
     {
         yield return new WaitForSeconds(6.0f);
 

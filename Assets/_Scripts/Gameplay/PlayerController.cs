@@ -46,6 +46,8 @@ public class PlayerController : MonoBehaviour
     public bool hasJump;
     int speedToAdd;
     float removePowerupTimer = 1.0f;
+    bool reduceSpeed = true;
+    bool respawning = false;
 
     // UI
     public Canvas gameUI;
@@ -184,19 +186,21 @@ public class PlayerController : MonoBehaviour
             moveDirection = transform.forward * moveController;
         }
 
-        if (Mathf.Abs(rigidBody.velocity.sqrMagnitude) > maxSquareVelocity)
+        if (respawning == false)
         {
-            rigidBody.AddForce(-rigidBody.velocity / (rigidBody.velocity.sqrMagnitude - maxSquareVelocity));
-            //rigidBody.velocity = rigidBody.velocity.normalized * playerMaxSpeed;
-            // rigidBody.AddForce(moveDirection * playerSpeed * Time.deltaTime);
+            if (Mathf.Abs(rigidBody.velocity.sqrMagnitude) > maxSquareVelocity)
+            {
+                rigidBody.AddForce(-rigidBody.velocity / (rigidBody.velocity.sqrMagnitude - maxSquareVelocity));
+                //rigidBody.velocity = rigidBody.velocity.normalized * playerMaxSpeed;
+                // rigidBody.AddForce(moveDirection * playerSpeed * Time.deltaTime);
+            }
+            else if (Mathf.Abs(rigidBody.velocity.magnitude) < playerMaxSpeed)
+            {
+                Debug.Log("Wtf");
+                rigidBody.AddForce(moveDirection * playerAccelerationSpeed * Time.deltaTime, ForceMode.Acceleration);
+            }
+            // rigidBody.velocity = Vector3.ClampMagnitude(rigidBody.velocity, playerMaxSpeed);
         }
-        else if (Mathf.Abs(rigidBody.velocity.magnitude) < playerMaxSpeed)
-        {
-            Debug.Log("Wtf");
-            rigidBody.AddForce(moveDirection * playerAccelerationSpeed * Time.deltaTime, ForceMode.Acceleration);
-        }
-        // rigidBody.velocity = Vector3.ClampMagnitude(rigidBody.velocity, playerMaxSpeed);
-
     }
 
     void Jump()
@@ -287,11 +291,11 @@ public class PlayerController : MonoBehaviour
                         {
                             case PowerType.SPEEDUP:
                                 speedToAdd = 5;
-                                HandleSpeedChanges();
+                                HandleSpeedChanges(true);
                                 break;
                             case PowerType.SPEEDDOWN:
                                 speedToAdd = -2;
-                                HandleSpeedChanges();
+                                HandleSpeedChanges(true);
                                 break;
                         }
                     }
@@ -336,9 +340,30 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void HandleSpeedChanges()
+    void HandleSpeedChanges(bool _addOrRemove)
     {
-        playerMaxSpeed += speedToAdd;
+        if (_addOrRemove == true)
+        {
+            playerMaxSpeed += speedToAdd;
+        }
+        else
+        {
+            if (reduceSpeed)
+            {
+                playerMaxSpeed /= 2;
+                reduceSpeed = false;
+                StartCoroutine(SetReduceSpeedBackToTrue());
+            }
+        }
+
+        //playerMaxSpeed = Mathf.Round(playerMaxSpeed);
+        playerMaxSpeed = Mathf.Ceil(playerMaxSpeed);
+
+        if (playerMaxSpeed < 2)
+        {
+            playerMaxSpeed = 2.0f;
+        }
+
         maxSquareVelocity = playerMaxSpeed * playerMaxSpeed;
         speedText.text = "Speed: " + playerMaxSpeed;
     }
@@ -355,11 +380,27 @@ public class PlayerController : MonoBehaviour
         return hasJump = false;
     }
 
-    void Respawn()
+    public void Respawn()
     {
+        respawning = true;
         Debug.Log("Hello");
         transform.position = placeToRespawn.position;
         transform.rotation = placeToRespawn.localRotation;
+
+        rigidBody.velocity = Vector3.zero;
+
+        HandleSpeedChanges(false);
+    }
+    
+
+    IEnumerator SetReduceSpeedBackToTrue()
+    {
+        if (reduceSpeed == false)
+        {
+            yield return new WaitForSeconds(0.5f);
+
+            reduceSpeed = true;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -367,12 +408,23 @@ public class PlayerController : MonoBehaviour
         if (other.GetComponent<GroundComponent>())
         {
             isGrounded = true;
+            respawning = false;
         }
 
         if (other.GetComponent<HazardComponent>())
         {
-            playerMaxSpeed /= 2;
-            maxSquareVelocity = playerMaxSpeed * playerMaxSpeed;
+            //HandleSpeedChanges(false);
+
+            //if (reduceSpeed)
+            //{
+            //    playerMaxSpeed = playerMaxSpeed / 2;
+            //    maxSquareVelocity = playerMaxSpeed * playerMaxSpeed;
+
+            //    speedText.text = "Speed: " + playerMaxSpeed;
+            //    reduceSpeed = false;
+
+            //    StartCoroutine(SetReduceSpeedBackToTrue());
+            //}
         }
     }
 
@@ -381,6 +433,18 @@ public class PlayerController : MonoBehaviour
         if (other.GetComponent<GroundComponent>())
         {
             isGrounded = false;
+        }
+        if (other.gameObject.GetComponent<HazardComponent>())
+        {
+            Respawn();
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.GetComponent<HazardComponent>())
+        {
+            Respawn();
         }
     }
 }
